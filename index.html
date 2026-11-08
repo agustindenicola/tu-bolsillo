@@ -1,0 +1,640 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>Tu Bolsillo</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&family=DM+Mono:wght@500&display=swap">
+<style>
+/* Layout: a phone on the right that you can actually use, a short brief on the left; on phones, just the app. */
+:root {
+  --bg: #eef2ee;          /* page ground, green-biased neutral */
+  --surface: #ffffff;
+  --surface-2: #f4f7f3;
+  --ink: #13201b;
+  --ink-2: #4c5c55;
+  --muted: #7d8c85;
+  --line: #dde5df;
+  --accent: #1d7a52;      /* verde billete */
+  --accent-ink: #ffffff;
+  --accent-soft: #e2f1e8;
+  --gold: #b9861f;        /* niveles y logros */
+  --gold-soft: #f6ecd4;
+  --crit: #b8432f;
+  --phone: #0f1814;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: "Figtree", "Segoe UI", system-ui, sans-serif;
+  --mono: "DM Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0d1411; --surface: #16201b; --surface-2: #1c2822; --ink: #e7efea; --ink-2: #b2c1b9; --muted: #85958d;
+  --line: #2a3832; --accent: #3fb07e; --accent-ink: #06130d; --accent-soft: #1d3a2c; --gold: #e0b250; --gold-soft: #3a3119;
+  --crit: #e27a65; --phone: #000000; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0d1411; --surface: #16201b; --surface-2: #1c2822; --ink: #e7efea; --ink-2: #b2c1b9; --muted: #85958d;
+  --line: #2a3832; --accent: #3fb07e; --accent-ink: #06130d; --accent-soft: #1d3a2c; --gold: #e0b250; --gold-soft: #3a3119;
+  --crit: #e27a65; --phone: #000000; color-scheme: dark; }
+
+* { box-sizing: border-box; }
+html, body { min-height: 100%; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.45;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 28px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+
+.stage { max-width: 1060px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr) 390px; gap: 48px; align-items: start; }
+#mount { min-width: 0; }
+.brief { padding-top: 40px; display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.brief h1 { font-size: clamp(44px, 6vw, 68px); font-weight: 800; letter-spacing: -.03em; line-height: .95; }
+.brief h1 span { color: var(--accent); }
+.brief p { color: var(--ink-2); max-width: 46ch; margin: 0; font-size: 16.5px; }
+.brief .tag { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.views { display: inline-flex; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 4px; gap: 4px; align-self: flex-start; }
+.views button { border: 0; background: none; padding: 8px 16px; border-radius: 999px; font-weight: 600; color: var(--ink-2); }
+.views button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.tour { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; max-width: 46ch; }
+.tour li { display: grid; grid-template-columns: 26px 1fr; gap: 10px; color: var(--ink-2); font-size: 14.5px; }
+.tour b { color: var(--ink); font-weight: 600; }
+.tour .n { width: 26px; height: 26px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; font-weight: 700; font-size: 13px; }
+.note { font-size: 12.5px; color: var(--muted); }
+
+/* ---------- teléfono */
+.phone { width: 390px; height: 800px; border-radius: 46px; background: var(--phone); padding: 12px; box-shadow: 0 40px 80px -30px rgba(10, 30, 20, .45); position: relative; }
+.screen { position: relative; height: 100%; border-radius: 36px; overflow: hidden; background: var(--bg); display: flex; flex-direction: column; }
+.statusbar { height: 40px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 0 26px; font-size: 13px; font-weight: 600; }
+.statusbar .island { width: 96px; height: 26px; background: var(--phone); border-radius: 20px; }
+.content { flex: 1; overflow-y: auto; padding: 6px 18px 18px; display: flex; flex-direction: column; gap: 14px; scrollbar-width: none; }
+.content::-webkit-scrollbar { display: none; }
+.tabbar { flex: none; display: grid; grid-template-columns: repeat(5, 1fr); background: var(--surface); border-top: 1px solid var(--line); padding: 8px 6px 18px; }
+.tabbar button { border: 0; background: none; display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 11px; font-weight: 600; color: var(--muted); padding: 4px 0; }
+.tabbar svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.tabbar button[aria-current="page"] { color: var(--accent); }
+
+.hello { display: flex; justify-content: space-between; align-items: center; }
+.hello h2 { font-size: 24px; letter-spacing: -.02em; }
+.hello small { color: var(--muted); display: block; font-size: 13px; }
+.avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--gold-soft); color: var(--gold); display: grid; place-items: center; font-weight: 700; }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.card h3 { font-size: 16px; font-weight: 600; letter-spacing: -.01em; }
+.label { font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.row { display: flex; align-items: center; gap: 10px; }
+.between { justify-content: space-between; }
+.sub { color: var(--ink-2); font-size: 13.5px; }
+
+.hero { background: var(--accent); color: var(--accent-ink); border: 0; border-radius: 24px; padding: 18px; }
+.hero .label { color: inherit; opacity: .8; }
+.hero .big { font-family: var(--mono); font-size: 40px; line-height: 1; letter-spacing: -.03em; }
+.hero .big.bump { animation: bump .6s ease; }
+@keyframes bump { 40% { transform: scale(1.06); } }
+.hero .chip { background: rgba(255,255,255,.18); padding: 3px 10px; border-radius: 999px; font-size: 12.5px; font-weight: 600; }
+.level { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+.bar { height: 8px; border-radius: 999px; background: rgba(255,255,255,.22); overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--gold-soft); border-radius: inherit; transition: width .6s ease; }
+.level small { font-size: 12.5px; opacity: .9; }
+
+.addgasto { display: flex; align-items: center; justify-content: center; gap: 8px; background: var(--ink); color: var(--bg); }
+.learn { gap: 8px; }
+.insight { display: grid; grid-template-columns: 28px 1fr; gap: 10px; font-size: 13.5px; color: var(--ink-2); align-items: start; }
+.insight b { color: var(--ink); font-weight: 600; }
+.insight .ic { width: 28px; height: 28px; border-radius: 9px; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; font-weight: 700; font-size: 13px; }
+.habit { color: var(--gold); font-weight: 700; }
+.stack { display: flex; height: 14px; border-radius: 99px; overflow: hidden; gap: 2px; }
+.stack i { display: block; height: 100%; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12.5px; color: var(--ink-2); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+.hint { font-size: 13.5px; color: var(--ink-2); background: var(--gold-soft); border-radius: 12px; padding: 10px 12px; }
+.hint:empty { display: none; }
+.hint b { color: var(--ink); }
+.near { border-color: var(--gold); background: var(--gold-soft); }
+.near .pin { width: 34px; height: 34px; border-radius: 12px; background: var(--gold); color: var(--surface); display: grid; place-items: center; flex: none; }
+.btn { border: 0; border-radius: 14px; padding: 12px 16px; font-weight: 700; background: var(--accent); color: var(--accent-ink); }
+.btn.ghost { background: var(--surface-2); color: var(--ink); border: 1px solid var(--line); }
+.btn.sm { padding: 8px 12px; font-size: 13.5px; border-radius: 12px; }
+.btn.full { width: 100%; }
+
+.promo { display: grid; grid-template-columns: 44px 1fr auto; gap: 12px; align-items: center; padding: 10px 0; border-top: 1px solid var(--line); background: none; border-left: 0; border-right: 0; border-bottom: 0; text-align: left; width: 100%; }
+.promo:first-of-type { border-top: 0; }
+.logo { width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; font-weight: 800; font-family: var(--display); color: #fff; font-size: 15px; }
+.promo b { display: block; font-weight: 600; }
+.promo .sub { font-size: 12.5px; }
+.pct { font-family: var(--display); font-weight: 800; font-size: 22px; color: var(--accent); letter-spacing: -.02em; }
+.pay { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--ink-2); }
+.pay i { width: 16px; height: 11px; border-radius: 3px; display: inline-block; }
+
+.chips { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+.chips::-webkit-scrollbar { display: none; }
+.chips button { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 7px 13px; font-size: 13px; font-weight: 600; white-space: nowrap; color: var(--ink-2); }
+.chips button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+.days button { border: 1px solid var(--line); background: var(--surface); border-radius: 12px; padding: 8px 0; font-size: 12px; font-weight: 600; color: var(--ink-2); display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.days button span { font-size: 10.5px; color: var(--muted); font-weight: 500; }
+.days button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.days button[aria-pressed="true"] span { color: inherit; opacity: .8; }
+
+.bars { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; align-items: end; height: 130px; padding-top: 6px; }
+.bars div { display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; }
+.bars i { width: 100%; border-radius: 8px 8px 4px 4px; background: var(--accent-soft); display: block; }
+.bars div:last-child i { background: var(--accent); }
+.bars small { font-size: 11.5px; color: var(--muted); }
+.bars em { font-style: normal; font-size: 11px; font-family: var(--mono); color: var(--ink-2); }
+.split { display: grid; gap: 10px; }
+.split .r { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; font-size: 14px; }
+.split .track { grid-column: 1 / -1; height: 6px; border-radius: 99px; background: var(--surface-2); overflow: hidden; }
+.split .track i { display: block; height: 100%; border-radius: inherit; }
+.goal .bar { background: var(--surface-2); }
+.goal .bar i { background: var(--gold); }
+
+.path { display: flex; flex-direction: column; gap: 0; }
+.lvl { display: grid; grid-template-columns: 44px 1fr; gap: 12px; position: relative; padding-bottom: 14px; }
+.lvl::before { content: ""; position: absolute; left: 21px; top: 44px; bottom: 0; width: 2px; background: var(--line); }
+.lvl:last-child::before { display: none; }
+.lvl .dot { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font-family: var(--display); font-weight: 800; font-size: 18px; background: var(--surface-2); color: var(--muted); border: 2px solid var(--line); z-index: 1; }
+.lvl.done .dot { background: var(--gold); color: var(--surface); border-color: var(--gold); }
+.lvl.open .dot { background: var(--gold-soft); color: var(--gold); border-color: var(--gold); }
+.lvl .body { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 12px 14px; display: flex; flex-direction: column; gap: 6px; }
+.lvl.locked .body { background: transparent; border-style: dashed; }
+.lvl h3 { font-size: 15.5px; }
+.lesson { display: flex; align-items: center; justify-content: space-between; gap: 8px; border: 0; background: var(--surface-2); border-radius: 12px; padding: 9px 11px; font-size: 13.5px; text-align: left; width: 100%; }
+.lesson .ok { color: var(--accent); font-weight: 700; }
+.lesson > span:last-child { white-space: nowrap; flex: none; }
+.lock { font-size: 12.5px; color: var(--muted); }
+
+.calc { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.calc label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); font-weight: 600; }
+.calc input, .calc select, .field input, .field select { border: 1px solid var(--line); background: var(--surface-2); border-radius: 12px; padding: 10px 12px; font: inherit; color: var(--ink); width: 100%; min-width: 0; }
+.result { background: var(--accent-soft); border-radius: 14px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.result b { font-family: var(--mono); font-size: 22px; color: var(--accent); }
+
+.pm { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); }
+.pm:first-of-type { border-top: 0; }
+.cardart { width: 46px; height: 30px; border-radius: 6px; flex: none; position: relative; }
+.cardart::after { content: ""; position: absolute; left: 6px; top: 9px; width: 10px; height: 8px; border-radius: 2px; background: rgba(255,255,255,.7); }
+.switch { margin-left: auto; width: 44px; height: 26px; border-radius: 99px; background: var(--line); border: 0; position: relative; flex: none; }
+.switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: var(--surface); transition: left .2s; }
+.switch[aria-checked="true"] { background: var(--accent); }
+.switch[aria-checked="true"]::after { left: 21px; }
+
+/* hoja inferior */
+.sheet-bg { position: absolute; inset: 0; background: rgba(5, 15, 10, .45); display: flex; align-items: flex-end; z-index: 20; animation: fade .2s ease; }
+.sheet { background: var(--surface); width: 100%; max-height: 90%; overflow-y: auto; border-radius: 28px 28px 0 0; padding: 10px 18px 24px; display: flex; flex-direction: column; gap: 14px; animation: up .25s ease; }
+.sheet .grab { width: 40px; height: 5px; border-radius: 99px; background: var(--line); margin: 0 auto 4px; }
+.sheet h2 { font-size: 22px; letter-spacing: -.02em; }
+@keyframes up { from { transform: translateY(30px); opacity: .4; } }
+@keyframes fade { from { opacity: 0; } }
+.rank { display: flex; flex-direction: column; gap: 6px; }
+.rank .it { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 14px; background: var(--surface-2); font-size: 14px; }
+.rank .it.best { background: var(--accent-soft); outline: 2px solid var(--accent); }
+.rank .it .v { margin-left: auto; font-weight: 700; }
+.field { display: flex; flex-direction: column; gap: 6px; font-size: 12.5px; color: var(--muted); font-weight: 600; }
+.saves { display: flex; justify-content: space-between; align-items: baseline; }
+.saves b { font-family: var(--mono); font-size: 28px; color: var(--accent); }
+.cap { font-size: 12.5px; color: var(--gold); font-weight: 600; }
+.fine { font-size: 12.5px; color: var(--muted); }
+.yesno { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+.celebrate { text-align: center; align-items: center; }
+.medal { width: 88px; height: 88px; border-radius: 50%; background: var(--gold); color: var(--surface); display: grid; place-items: center; font-family: var(--display); font-weight: 800; font-size: 36px; margin-top: 6px; box-shadow: 0 0 0 8px var(--gold-soft); animation: pop .5s ease; }
+@keyframes pop { from { transform: scale(.4); } 70% { transform: scale(1.08); } }
+
+.toast { position: absolute; left: 18px; right: 18px; bottom: 92px; background: var(--ink); color: var(--bg); border-radius: 14px; padding: 12px 14px; font-size: 13.5px; font-weight: 600; z-index: 30; animation: up .2s ease; }
+
+/* ---------- panel para comercios */
+.panel { width: 100%; max-width: 560px; background: var(--surface); border: 1px solid var(--line); border-radius: 24px; padding: 22px; display: flex; flex-direction: column; gap: 18px; }
+.panel h2 { font-size: 24px; letter-spacing: -.02em; }
+.kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.kpis div { background: var(--surface-2); border-radius: 16px; padding: 12px; }
+.kpis b { font-family: var(--mono); font-size: 24px; display: block; }
+.kpis small { color: var(--muted); font-size: 12.5px; }
+.funnel { display: flex; flex-direction: column; gap: 6px; }
+.funnel .f { display: grid; grid-template-columns: 90px 1fr 54px; align-items: center; gap: 10px; font-size: 13px; }
+.funnel .f i { display: block; height: 22px; border-radius: 6px; background: var(--accent); }
+.form2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.form2 .full { grid-column: 1 / -1; }
+.table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.table th { text-align: left; font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding: 6px 4px; font-weight: 600; }
+.table td { padding: 9px 4px; border-top: 1px solid var(--line); }
+.table td.n { text-align: right; font-family: var(--mono); }
+.status { font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 99px; background: var(--accent-soft); color: var(--accent); }
+.status.off { background: var(--surface-2); color: var(--muted); }
+
+@media (max-width: 900px) {
+  body { padding-block: 16px; }
+  .stage { grid-template-columns: 1fr; gap: 20px; }
+  .brief { padding-top: 0; }
+  .brief .tour { display: none; }
+  .phone { width: 100%; max-width: 420px; height: 760px; margin: 0 auto; border-radius: 40px; padding: 8px; }
+  .screen { border-radius: 32px; }
+}
+@media (max-width: 440px) {
+  .phone { background: transparent; padding: 0; box-shadow: none; height: 720px; }
+  .screen { border-radius: 24px; border: 1px solid var(--line); }
+  .statusbar .island { display: none; }
+  .kpis { grid-template-columns: 1fr; }
+  .form2 { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+
+<div class="stage">
+  <section class="brief">
+    <div class="tag">Tu Bolsillo · prototipo con datos de ejemplo</div>
+    <h1>Que tu plata <span>rinda</span>.</h1>
+    <p>Tu Bolsillo te dice con qué pagar en cada lugar para gastar menos, lleva la cuenta de lo que ahorraste y, con esa plata, te enseña a dar el primer paso para invertir.</p>
+    <div class="views" role="group" aria-label="Vista">
+      <button id="v-user" aria-pressed="true">App del usuario</button>
+      <button id="v-org" aria-pressed="false">Panel para comercios</button>
+    </div>
+    <ol class="tour">
+      <li><span class="n">1</span><span>Tocá el aviso <b>“Estás cerca de La Proveeduría”</b> y mirá con qué te conviene pagar.</span></li>
+      <li><span class="n">2</span><span>Tocá <b>“Usé el descuento”</b>: el ahorro se suma y pasás al <b>Nivel 3</b>.</span></li>
+      <li><span class="n">3</span><span>En <b>Aprender</b> abrí una lección y probá la calculadora con tu ahorro.</span></li>
+      <li><span class="n">4</span><span>Tocá <b>“Cargar un gasto”</b>, elegí <b>Efectivo</b> y mirá cuánto te hubieras ahorrado con una billetera.</span></li>
+      <li><span class="n">5</span><span>Mirá <b>“Aprendiendo de vos”</b> en el inicio y <b>Gastos y ahorro</b>: la app se arma según tus hábitos.</span></li>
+    </ol>
+    <p class="note">Los bancos, billeteras y comercios son inventados; los montos y tasas son de ejemplo.</p>
+  </section>
+
+  <div id="mount"></div>
+</div>
+
+<script>
+(() => {
+  const $ = (s, el = document) => el.querySelector(s);
+  const money = v => "$ " + Math.round(v).toLocaleString("es-AR");
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+  // ---------- datos de ejemplo (todo inventado)
+  const PAY = {
+    azul:  { name: "Tarjeta Azul", bank: "Banco Río Sur", color: "#2c5fa8" },
+    pampa: { name: "Visa Pampa", bank: "Banco Pampa", color: "#7a3fa0" },
+    nube:  { name: "Billetera Nube", bank: "Billetera virtual", color: "#0f9b8e" },
+    mono:  { name: "Billetera Mono", bank: "Billetera virtual", color: "#e0662b" },
+    efectivo: { name: "Efectivo", bank: "Siempre disponible", color: "#6b7d74", cash: true },
+  };
+  const KIND = k => PAY[k].cash ? "Efectivo" : PAY[k].bank === "Billetera virtual" ? "Billeteras" : "Tarjetas";
+  const RUBROS = ["Todos", "Súper", "Comida", "Nafta", "Farmacia"];
+  const DAYS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+  const TODAY = 3; // jueves
+  const PROMOS = [
+    { id: "prov", shop: "La Proveeduría", ini: "LP", color: "#c0582f", rubro: "Súper", pay: "azul", pct: 25, days: [3], cap: 4000, used: 1200, dist: "200 m",
+      cond: "Jueves, pagando con la tarjeta. Reintegro en el resumen.", others: { mono: 15, nube: 10, pampa: 0, efectivo: 0 } },
+    { id: "napo", shop: "Pizzería Nápoles", ini: "PN", color: "#b5452c", rubro: "Comida", pay: "mono", pct: 25, days: [3, 4], cap: 2000, used: 0, dist: "900 m",
+      cond: "Jueves y viernes, pagando con el QR de la billetera.", others: { efectivo: 10, nube: 0, azul: 0 } },
+    { id: "farm", shop: "Farmacia del Centro", ini: "FC", color: "#2f8f5b", rubro: "Farmacia", pay: "nube", pct: 20, days: [0,1,2,3,4,5,6], cap: 2500, used: 0, dist: "450 m",
+      cond: "Todos los días, pagando con QR desde la billetera.", others: { azul: 5, pampa: 0 } },
+    { id: "molino", shop: "Café Molino", ini: "CM", color: "#8a5a2b", rubro: "Comida", pay: "nube", pct: 30, days: [1,2,3], cap: 1500, used: 300, dist: "700 m",
+      cond: "Martes a jueves de 16 a 19, con QR.", others: { azul: 0, pampa: 10 } },
+    { id: "ruta", shop: "Estación Ruta 9", ini: "R9", color: "#d1a01f", rubro: "Nafta", pay: "azul", pct: 10, days: [6, 3], cap: 3000, used: 0, dist: "1,2 km",
+      cond: "Jueves y domingos. Tope por mes y por cliente.", others: { nube: 5, pampa: 0 } },
+    { id: "fogon", shop: "Parrilla El Fogón", ini: "EF", color: "#a83a3a", rubro: "Comida", pay: "pampa", pct: 20, days: [4, 5], cap: 5000, used: 0, dist: "2 km",
+      cond: "Viernes y sábados en el salón, en una cuota.", others: { azul: 0, nube: 0 } },
+    { id: "verde", shop: "Verdulería Doña Rosa", ini: "DR", color: "#4d8a2a", rubro: "Súper", pay: "nube", pct: 15, days: [0, 2], cap: 1200, used: 0, dist: "300 m",
+      cond: "Lunes y miércoles, con QR.", others: { efectivo: 10, azul: 0, pampa: 0 } },
+    { id: "kiosco", shop: "Kiosco La Esquina", ini: "KE", color: "#5b6b8c", rubro: "Comida", pay: "efectivo", pct: 5, days: [0,1,2,3,4,5,6], cap: null, used: 0, dist: "50 m",
+      cond: "Descuento del comercio por pagar en efectivo.", others: { mono: 0, nube: 0 } },
+  ];
+  const LEVELS = [
+    { n: 1, name: "Ahorrador", need: 0, lessons: ["Por qué la plata quieta pierde valor"] },
+    { n: 2, name: "Primer paso", need: 5000, lessons: ["Cuenta remunerada en 2 minutos", "Plazo fijo: cómo funciona"] },
+    { n: 3, name: "Fondos", need: 20000, lessons: ["Qué es un fondo común de inversión", "Riesgo: qué es y cuánto aceptar", "Abrir una cuenta para invertir, paso a paso"] },
+    { n: 4, name: "Explorador", need: 50000, lessons: ["Bonos explicados simple", "Acciones y CEDEARs"] },
+  ];
+  const LESSON_TEXT = {
+    "Por qué la plata quieta pierde valor": ["Si los precios suben y tu plata no, con la misma plata comprás menos cosas.", "Por eso, aunque sea poco, conviene que lo que ahorrás genere algo mientras no lo usás.", "No hace falta mucha plata para empezar: con lo que ahorraste este mes ya alcanza para probar."],
+    "Cuenta remunerada en 2 minutos": ["Es una cuenta donde la plata te da un interés todos los días y la podés sacar cuando quieras.", "Muchas billeteras y bancos la ofrecen. Rinde menos que un plazo fijo, pero no la inmovilizás.", "Antes de elegir, fijate la tasa (TNA) y si tiene un tope de monto."],
+    "Plazo fijo: cómo funciona": ["Dejás la plata un plazo (por ejemplo, 30 días) y al final te devuelven lo que pusiste más un interés.", "Mientras dura, no la podés usar. A cambio, el interés suele ser más alto que en una cuenta remunerada.", "Usá la calculadora de abajo para ver cuánto ganarías con tu ahorro."],
+  };
+  const MONTHS = [["Jun", 1800], ["Jul", 2400], ["Ago", 2100], ["Sep", 3050], ["Oct", 2900], ["Nov", 6200]];
+
+  // ---------- estado
+  const S = { view: "user", tab: "inicio", saved: 18450, month: 6200, uses: 14, rubro: "Todos", day: TODAY, read: new Set(["Por qué la plata quieta pierde valor"]),
+              tna: 30, days: 30, amount: null, family: false, personal: true, missed: 4300,
+              payOn: { azul: true, pampa: true, nube: true, mono: true, efectivo: true },
+              // gastos de ejemplo: lo que la app usa para aprender los hábitos de cada usuario
+              gastos: [
+                { d: "Hoy", place: "Kiosco La Esquina", rubro: "Comida", pay: "efectivo", amt: 3200, save: 160 },
+                { d: "Ayer", place: "Farmacia del Centro", rubro: "Farmacia", pay: "nube", amt: 8500, save: 1700 },
+                { d: "Mar 10", place: "Verdulería Doña Rosa", rubro: "Súper", pay: "efectivo", amt: 6000, save: 600 },
+                { d: "Lun 9", place: "Estación Ruta 9", rubro: "Nafta", pay: "azul", amt: 25000, save: 0 },
+                { d: "Vie 6", place: "Pizzería Nápoles", rubro: "Comida", pay: "efectivo", amt: 14000, save: 1400 },
+                { d: "Jue 5", place: "La Proveeduría", rubro: "Súper", pay: "mono", amt: 31000, save: 4650 },
+                { d: "Mié 4", place: "Café Molino", rubro: "Comida", pay: "nube", amt: 5000, save: 1500 },
+                { d: "Mar 3", place: "Café Molino", rubro: "Comida", pay: "nube", amt: 4200, save: 1260 },
+                { d: "Jue 29", place: "La Proveeduría", rubro: "Súper", pay: "azul", amt: 27000, save: 4000 },
+              ] };
+  const PLACES = PROMOS.map(p => p.shop).concat(["Otro lugar"]);
+  // mejor forma de pagar en un lugar hoy, entre los medios que el usuario tiene
+  function options(p) { return [[p.pay, p.pct], ...Object.entries(p.others)].filter(([k]) => S.payOn[k]).sort((a, b) => b[1] - a[1]); }
+  const levelOf = v => [...LEVELS].reverse().find(l => v >= l.need);
+  const nextOf = v => LEVELS.find(l => l.need > v);
+
+  const icons = {
+    inicio: '<path d="M4 11l8-7 8 7v8a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z"/>',
+    promos: '<path d="M20 12l-8 8-8-8V4h8z"/><circle cx="8.5" cy="8.5" r="1.5"/>',
+    ahorro: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+    aprender: '<path d="M2 8l10-5 10 5-10 5z"/><path d="M6 10v5c3 2 9 2 12 0v-5"/>',
+    perfil: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/>',
+  };
+  const TABS = [["inicio", "Inicio"], ["promos", "Promos"], ["ahorro", "Gastos"], ["aprender", "Aprender"], ["perfil", "Perfil"]];
+
+  function payTag(k) { const p = PAY[k]; return `<span class="pay"><i style="background:${p.color}"></i>${esc(p.name)}</span>`; }
+  function promoRow(p, tag) {
+    return `<button class="promo" data-promo="${p.id}"><span class="logo" style="background:${p.color}">${p.ini}</span>
+      <span><b>${esc(p.shop)}</b><span class="sub">${esc(p.rubro)} · ${p.dist}${tag ? ` · <span class="habit">${tag}</span>` : ""}</span><br>${payTag(p.pay)}</span><span class="pct">${p.pct}%</span></button>`;
+  }
+
+  // ---------- pantallas
+  const SCREENS = {
+    inicio() {
+      const lv = levelOf(S.saved), nx = nextOf(S.saved);
+      const prog = nx ? (S.saved - lv.need) / (nx.need - lv.need) * 100 : 100;
+      const freq = {}; S.gastos.forEach(g => freq[g.place] = (freq[g.place] || 0) + 1);
+      // personalizado: primero los lugares donde ya compró
+      const today = PROMOS.filter(p => p.days.includes(TODAY) && S.payOn[p.pay])
+        .sort((a, b) => S.personal ? (freq[b.shop] || 0) - (freq[a.shop] || 0) || b.pct - a.pct : b.pct - a.pct);
+      const cash = S.gastos.filter(g => g.pay === "efectivo").length, n = S.gastos.length;
+      return `
+        <div class="hello"><div><small>Jueves 12 de noviembre</small><h2>Hola, Agustín</h2></div><div class="avatar">A</div></div>
+        <div class="card hero">
+          <div class="row between"><span class="label">Ahorraste este año</span><span class="chip">+${money(S.month)} este mes</span></div>
+          <div class="big num" id="bigsaved">${money(S.saved)}</div>
+          <div class="level"><div class="row between"><small>Nivel ${lv.n} · ${lv.name}</small><small>${nx ? `te faltan <span class="num">${money(nx.need - S.saved)}</span> para el ${nx.n}` : "nivel máximo"}</small></div>
+            <div class="bar"><i style="width:${prog}%"></i></div></div>
+        </div>
+        <button class="btn full addgasto" id="addgasto"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Cargar un gasto</button>
+        <button class="card near" data-promo="prov" style="text-align:left">
+          <div class="row"><span class="pin"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6.5-7-12a7 7 0 0 1 14 0c0 5.5-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></svg></span>
+          <div><b>Estás a 200 m de La Proveeduría</b><div class="sub">Hoy 25% con tu Tarjeta Azul. ${PROMOS[0].used >= PROMOS[0].cap ? "Ya usaste todo el reintegro de este mes." : `Te quedan ${money(PROMOS[0].cap - PROMOS[0].used)} de reintegro.`}</div></div></div>
+        </button>
+        <div class="card"><div class="row between"><h3>Hoy te conviene</h3><button class="btn ghost sm" data-tab="promos">Ver todas</button></div>
+          ${today.map(p => promoRow(p, S.personal && freq[p.shop] >= 2 ? "vas seguido" : "")).join("")}</div>
+        ${S.personal ? `<div class="card learn"><div class="row between"><h3>Aprendiendo de vos</h3><span class="label">${n} gastos</span></div>
+          <div class="insight"><span class="ic">◷</span><span>Los <b>jueves</b> solés ir al súper: te avisamos las promos de súper el miércoles a la noche.</span></div>
+          <div class="insight"><span class="ic">$</span><span>Pagás <b>${cash} de cada ${n}</b> compras en efectivo. Este mes eso te hizo perder <b class="num">${money(S.missed)}</b> en descuentos.</span></div>
+          <div class="insight"><span class="ic">▣</span><span>Usás más <b>billeteras virtuales</b> que tarjetas: te mostramos primero las promos con QR.</span></div>
+        </div>` : ""}
+        <div class="card"><div class="row between"><h3>Tu próxima lección</h3><span class="label">2 min</span></div>
+          <div class="sub">Con ${money(S.saved)} ya podés armar tu primer plazo fijo. Te contamos cómo funciona.</div>
+          <button class="btn ghost" data-lesson="Plazo fijo: cómo funciona">Plazo fijo: cómo funciona</button></div>`;
+    },
+    promos() {
+      const list = PROMOS.filter(p => p.days.includes(S.day) && (S.rubro === "Todos" || p.rubro === S.rubro) && S.payOn[p.pay]);
+      return `
+        <div class="hello"><div><small>Solo las que podés usar con tus medios de pago</small><h2>Promos</h2></div></div>
+        <div class="days">${DAYS.map((d, i) => `<button data-day="${i}" aria-pressed="${i === S.day}">${d}<span>${9 + i}</span></button>`).join("")}</div>
+        <div class="chips">${RUBROS.map(r => `<button data-rubro="${r}" aria-pressed="${r === S.rubro}">${r}</button>`).join("")}</div>
+        <div class="card">${list.length ? list.map(p => promoRow(p)).join("") : `<div class="sub" style="padding:14px 0;text-align:center">No hay promos de este rubro ese día.</div>`}</div>
+        <div class="card"><h3>¿Viste una promo que no está?</h3><div class="sub">Sacale una foto al cartel o pegá el link. El bot la lee, la verifica y la suma para todos.</div>
+          <button class="btn ghost" id="addpromo">Sumar una promo</button></div>`;
+    },
+    ahorro() {
+      const max = Math.max(...MONTHS.map(m => m[1]));
+      const rub = [["Súper", 7400, "#c0582f"], ["Comida", 5200, "#8a5a2b"], ["Nafta", 3350, "#d1a01f"], ["Farmacia", 2500, "#2f8f5b"]];
+      const tot = rub.reduce((a, r) => a + r[1], 0);
+      const byKind = {}; S.gastos.forEach(g => byKind[KIND(g.pay)] = (byKind[KIND(g.pay)] || 0) + g.amt);
+      const spent = S.gastos.reduce((a, g) => a + g.amt, 0);
+      const kc = { Billeteras: "#0f9b8e", Tarjetas: "#2c5fa8", Efectivo: "#6b7d74" };
+      return `
+        <div class="hello"><div><small>Todo lo que gastás, y lo que ahorrás</small><h2>Gastos y ahorro</h2></div></div>
+        <div class="card"><div class="row between"><span class="label">Cómo pagás</span><span class="sub num">${money(spent)} en ${S.gastos.length} gastos</span></div>
+          <div class="stack">${["Billeteras", "Tarjetas", "Efectivo"].map(k => `<i style="width:${(byKind[k] || 0) / spent * 100}%;background:${kc[k]}" title="${k}"></i>`).join("")}</div>
+          <div class="legend">${["Billeteras", "Tarjetas", "Efectivo"].map(k => `<span><i style="background:${kc[k]}"></i>${k} <b class="num">${Math.round((byKind[k] || 0) / spent * 100)}%</b></span>`).join("")}</div></div>
+        <div class="card"><div class="row between"><span class="label">Últimos gastos</span><button class="btn ghost sm" id="addgasto2">+ Cargar</button></div>
+          ${S.gastos.slice(0, 5).map(g => `<div class="pm"><span class="cardart" style="background:${PAY[g.pay].color}"></span><div style="min-width:0"><b>${esc(g.place)}</b><div class="sub">${g.d} · ${esc(PAY[g.pay].name)}</div></div>
+            <div style="margin-left:auto;text-align:right;white-space:nowrap;flex:none"><b class="num">${money(g.amt)}</b><div class="sub" style="color:${g.save ? "var(--accent)" : "var(--muted)"}">${g.save ? "ahorraste " + money(g.save) : "sin descuento"}</div></div></div>`).join("")}</div>
+        <div class="card"><div class="row between"><span class="label">Por mes</span><span class="sub">${S.uses} descuentos usados</span></div>
+          <div class="bars">${MONTHS.map(([m, v], i) => { const val = i === MONTHS.length - 1 ? S.month : v; return `<div><em>${(val / 1000).toLocaleString("es-AR", { maximumFractionDigits: 1 })}k</em><i style="height:${Math.min(100, val / Math.max(max, S.month) * 100)}%"></i><small>${m}</small></div>`; }).join("")}</div></div>
+        <div class="card"><span class="label">En qué rubro rinde más</span><div class="split">${rub.map(([r, v, c]) => `<div class="r"><span>${r}</span><span class="num">${money(v)}</span><span class="track"><i style="width:${v / tot * 100}%;background:${c}"></i></span></div>`).join("")}</div></div>
+        <div class="card goal"><div class="row between"><h3>Objetivo: vacaciones</h3><span class="num sub">${money(S.saved)} / $ 300.000</span></div>
+          <div class="bar"><i style="width:${S.saved / 300000 * 100}%"></i></div>
+          <div class="sub">A este ritmo llegás en marzo. Si además lo dejás en una cuenta remunerada, llegás antes.</div></div>`;
+    },
+    aprender() {
+      const amount = S.amount ?? S.saved;
+      const gain = amount * S.tna / 100 / 365 * S.days;
+      return `
+        <div class="hello"><div><small>Desbloqueás niveles con lo que ahorrás</small><h2>Aprender</h2></div></div>
+        <div class="path">${LEVELS.map(l => {
+          const st = S.saved >= l.need ? (nextOf(S.saved)?.n === l.n + 1 || !nextOf(S.saved) ? "open" : "done") : "locked";
+          return `<div class="lvl ${st}"><div class="dot">${l.n}</div><div class="body">
+            <div class="row between"><h3>${l.name}</h3>${st === "locked" ? `<span class="lock">desde ${money(l.need)}</span>` : st === "done" ? `<span class="lock">superado</span>` : `<span class="lock" style="color:var(--gold);font-weight:700">en curso</span>`}</div>
+            ${st === "locked" ? `<div class="sub">${l.lessons.length} lecciones · te faltan ${money(l.need - S.saved)}</div>`
+              : l.lessons.map(t => `<button class="lesson" data-lesson="${esc(t)}"><span>${esc(t)}</span><span class="${S.read.has(t) ? "ok" : "sub"}">${S.read.has(t) ? "✓" : "2 min"}</span></button>`).join("")}
+          </div></div>`; }).join("")}</div>
+        <div class="card"><h3>¿Cuánto ganarías?</h3>
+          <div class="calc">
+            <label for="c-amt">Monto<input id="c-amt" inputmode="numeric" value="${Math.round(amount)}"></label>
+            <label for="c-days">Plazo<select id="c-days">${[30, 60, 90, 180].map(d => `<option value="${d}" ${d === S.days ? "selected" : ""}>${d} días</option>`).join("")}</select></label>
+            <label for="c-tna" style="grid-column:1/-1">TNA de ejemplo (%)<input id="c-tna" inputmode="decimal" value="${S.tna}"></label>
+          </div>
+          <div class="result"><span class="sub">Ganarías aprox.</span><b id="c-res">${money(gain)}</b></div>
+          <div class="fine">Cálculo simple para aprender. La tasa real cambia: mirala en tu banco o billetera antes de decidir. Tu Bolsillo no recomienda dónde invertir.</div></div>
+        <div class="card"><h3>Glosario</h3>${[["TNA", "Tasa nominal anual: el interés que te pagan en un año, sin reinvertir."], ["FCI", "Fondo común de inversión: juntás tu plata con la de otros y la administra un profesional."], ["CEDEAR", "Certificado que te permite invertir en acciones de empresas de afuera, en pesos."]].map(([t, d]) => `<details><summary><b>${t}</b></summary><div class="sub" style="padding:6px 0">${d}</div></details>`).join("")}</div>`;
+    },
+    perfil() {
+      return `
+        <div class="hello"><div><small>Lo que usa Tu Bolsillo para elegir tus promos</small><h2>Perfil</h2></div><div class="avatar">A</div></div>
+        <div class="card"><span class="label">Mis medios de pago</span>
+          ${Object.entries(PAY).map(([k, p]) => `<div class="pm"><span class="cardart" style="background:${p.color}"></span><div><b>${p.name}</b><div class="sub">${p.bank}</div></div>
+            ${p.cash ? `<span class="sub" style="margin-left:auto">siempre</span>` : `<button class="switch" role="switch" aria-label="Usar ${p.name}" aria-checked="${S.payOn[k]}" data-pay="${k}"></button>`}</div>`).join("")}
+          <button class="btn ghost sm">+ Agregar tarjeta o billetera</button></div>
+        <div class="card"><span class="label">Mis lugares</span><div class="chips" style="flex-wrap:wrap">${["La Proveeduría", "Café Molino", "Estación Ruta 9", "Farmacia del Centro", "+ Agregar"].map(l => `<button>${l}</button>`).join("")}</div></div>
+        <div class="card"><div class="pm" style="border:0;padding:0"><div><b>Personalizar con mis gastos</b><div class="sub">La app aprende tus hábitos para ordenar promos y avisos. Lo podés apagar cuando quieras.</div></div>
+          <button class="switch" role="switch" aria-label="Personalizar con mis gastos" aria-checked="${S.personal}" id="personal"></button></div>
+          ${S.personal ? `<span class="label">Lo que aprendimos de vos</span><div class="chips" style="flex-wrap:wrap">${["Súper los jueves", "Café a la tarde", "Nafta cada 2 semanas", "Preferís QR"].map(t => `<button title="Tocá para corregirlo">${t} ✕</button>`).join("")}</div>` : ""}</div>
+        <div class="card"><div class="pm" style="border:0;padding:0"><div><b>Modo familia</b><div class="sub">Ahorro compartido con tu pareja o familia · Tu Bolsillo Plus</div></div>
+          <button class="switch" role="switch" aria-label="Modo familia" aria-checked="${S.family}" id="family"></button></div></div>
+        <div class="card"><span class="label">Tu privacidad</span><div class="sub">Tu Bolsillo no te pide claves ni números de tarjeta: alcanza con saber qué tarjeta tenés. Nunca vendemos tus datos.</div></div>`;
+    },
+  };
+
+  // ---------- hojas (detalle de promo, lección, bot, nivel)
+  function sheet(html, onMount) {
+    const bg = document.createElement("div");
+    bg.className = "sheet-bg";
+    bg.innerHTML = `<div class="sheet" role="dialog" aria-modal="true"><div class="grab"></div>${html}</div>`;
+    bg.addEventListener("click", e => { if (e.target === bg || e.target.closest("[data-close]")) bg.remove(); });
+    $(".screen").appendChild(bg);
+    onMount?.(bg);
+    $("button, input", bg.querySelector(".sheet"))?.focus({ preventScroll: true });
+    return bg;
+  }
+  function toast(msg) {
+    $(".toast")?.remove();
+    const t = document.createElement("div"); t.className = "toast"; t.textContent = msg; t.setAttribute("role", "status");
+    $(".screen").appendChild(t); setTimeout(() => t.remove(), 2600);
+  }
+
+  function promoSheet(id) {
+    const p = PROMOS.find(x => x.id === id);
+    const left = p.cap ? p.cap - p.used : Infinity;
+    const opts = options(p);
+    sheet(`
+      <div class="row"><span class="logo" style="background:${p.color}">${p.ini}</span><div><h2>${esc(p.shop)}</h2><div class="sub">${p.rubro} · ${p.dist}</div></div></div>
+      <div><span class="label">Con qué te conviene pagar acá hoy</span>
+        <div class="rank" style="margin-top:8px">${opts.map(([k, v], i) => `<div class="it ${i === 0 ? "best" : ""}">${payTag(k)}<span class="v ${i === 0 ? "pct" : "sub"}" style="${i ? "" : "font-size:18px"}">${v ? v + "%" : "sin promo"}</span></div>`).join("")}</div></div>
+      <label class="field" for="spend">¿Cuánto vas a gastar?<input id="spend" inputmode="numeric" value="12000"></label>
+      <div class="saves"><span class="sub">Ahorrás</span><b id="willsave"></b></div>
+      <div class="cap" id="capnote"></div>
+      <div class="fine">${esc(p.cond)}${p.cap ? ` Tope: ${money(p.cap)} por mes.` : " Sin tope."}</div>
+      <button class="btn full" id="used">Usé el descuento</button>`, bg => {
+        const calc = () => { const v = Math.max(0, +$("#spend", bg).value.replace(/\D/g, "") || 0); const s = Math.min(v * p.pct / 100, left);
+          $("#willsave", bg).textContent = money(s); $("#capnote", bg).textContent = !p.cap ? "" : v * p.pct / 100 > left ? `Llegás al tope: te quedan ${money(left)} de reintegro este mes.` : `Te quedan ${money(left - s)} de reintegro después de esta compra.`; return s; };
+        calc(); $("#spend", bg).oninput = calc;
+        $("#used", bg).onclick = () => {
+          const s = calc();
+          const sh = $(".sheet", bg);
+          sh.innerHTML = `<div class="grab"></div><h2>¿Te aplicaron el descuento?</h2><div class="sub">Tu respuesta ayuda a que las promos de Tu Bolsillo sean siempre reales.</div>
+            <div class="yesno"><button class="btn" id="yes">Sí, me funcionó</button><button class="btn ghost" id="no">No me lo aplicaron</button></div>`;
+          const spent = +$("#spend", bg).value.replace(/\D/g, "") || 0;
+          $("#yes", bg).onclick = () => { bg.remove(); S.gastos.unshift({ d: "Hoy", place: p.shop, rubro: p.rubro, pay: p.pay, amt: spent, save: s }); addSaving(s, p); };
+          $("#no", bg).onclick = () => { bg.remove(); toast("Gracias. Revisamos esta promo y avisamos al resto si cambió."); };
+        };
+      });
+  }
+  function addSaving(s, p, msg) {
+    const before = levelOf(S.saved);
+    S.saved += s; S.month += s; if (s) S.uses += 1; if (p) p.used += s;
+    render();
+    if (s) $("#bigsaved")?.classList.add("bump");
+    const after = levelOf(S.saved);
+    if (after.n > before.n) setTimeout(() => levelSheet(after), 500);
+    else toast(msg || `Sumaste ${money(s)} a tu ahorro.`);
+  }
+  // cargar cualquier gasto, con cualquier medio (efectivo incluido)
+  function gastoSheet() {
+    let pay = "efectivo";
+    sheet(`<h2>Cargar un gasto</h2><div class="sub">Anotá todo lo que gastás: así la app aprende tus hábitos y te avisa mejor.</div>
+      <label class="field" for="g-amt">¿Cuánto gastaste?<input id="g-amt" inputmode="numeric" value="9000"></label>
+      <label class="field" for="g-place">¿Dónde?<select id="g-place">${PLACES.map(pl => `<option ${pl === "Pizzería Nápoles" ? "selected" : ""}>${esc(pl)}</option>`).join("")}</select></label>
+      <div class="field">¿Cómo pagaste?<div class="chips" style="flex-wrap:wrap" id="g-pay">${Object.entries(PAY).map(([k, p]) => `<button data-gpay="${k}" aria-pressed="${k === pay}">${esc(p.name)}</button>`).join("")}</div></div>
+      <div class="hint" id="g-hint"></div>
+      <button class="btn full" id="g-save">Guardar gasto</button>`, bg => {
+        const hint = () => {
+          const pl = $("#g-place", bg).value, amt = +$("#g-amt", bg).value.replace(/\D/g, "") || 0;
+          const p = PROMOS.find(x => x.shop === pl && x.days.includes(TODAY));
+          if (!p) { $("#g-hint", bg).innerHTML = ""; return { s: 0, best: 0, p: null, pl, amt }; }
+          const all = options(p), mine = (all.find(([k]) => k === pay) || [pay, 0])[1], [bk, bv] = all[0];
+          const cap = v => Math.min(v, p.cap ? p.cap - p.used : Infinity);
+          const s = cap(amt * mine / 100), best = cap(amt * bv / 100);
+          $("#g-hint", bg).innerHTML = bv > mine
+            ? `<b>Ojo:</b> con <b>${esc(PAY[bk].name)}</b> hoy ahorrabas <b class="num">${money(best)}</b>${mine ? ` (con ${esc(PAY[pay].name)}, ${money(s)})` : ""}.`
+            : mine ? `Con ${esc(PAY[pay].name)} ahorrás <b class="num">${money(s)}</b>. Es la mejor opción acá hoy.` : "";
+          return { s, best, p, pl, amt };
+        };
+        hint();
+        $("#g-amt", bg).oninput = hint; $("#g-place", bg).onchange = hint;
+        bg.querySelectorAll("[data-gpay]").forEach(b => b.onclick = () => { pay = b.dataset.gpay; bg.querySelectorAll("[data-gpay]").forEach(x => x.setAttribute("aria-pressed", String(x === b))); hint(); });
+        $("#g-save", bg).onclick = () => {
+          const { s, best, p, pl, amt } = hint();
+          S.gastos.unshift({ d: "Hoy", place: pl, rubro: p ? p.rubro : "Otros", pay, amt, save: s });
+          if (best > s) S.missed += best - s;
+          bg.remove();
+          addSaving(s, p, best > s ? `Gasto anotado. La próxima te avisamos antes para que ahorres ${money(best - s)}.` : s ? `Gasto anotado. Sumaste ${money(s)} a tu ahorro.` : "Gasto anotado.");
+        };
+      });
+  }
+  function levelSheet(l) {
+    sheet(`<div class="celebrate card" style="border:0;padding:0"><div class="medal">${l.n}</div><h2>¡Nivel ${l.n}: ${l.name}!</h2>
+      <div class="sub">Ya ahorraste ${money(S.saved)}. Desbloqueaste ${l.lessons.length} lecciones nuevas para aprender qué hacer con esa plata.</div></div>
+      <button class="btn full" id="golearn">Ver las lecciones</button><button class="btn ghost full" data-close>Más tarde</button>`,
+      bg => $("#golearn", bg).onclick = () => { bg.remove(); go("aprender"); });
+  }
+  function lessonSheet(t) {
+    const parts = LESSON_TEXT[t] || ["Lección de ejemplo: en la app real, cada lección son 3 o 4 pantallas cortas con un ejemplo con números.", "Al final hay una pregunta para chequear que se entendió."];
+    sheet(`<span class="label">Lección · 2 min</span><h2>${esc(t)}</h2>${parts.map(x => `<p class="sub" style="margin:0;font-size:15px;color:var(--ink)">${esc(x)}</p>`).join("")}
+      <button class="btn full" id="gotit">Entendido</button>`, bg => $("#gotit", bg).onclick = () => { S.read.add(t); bg.remove(); render(); toast("Lección completa."); });
+  }
+  function botSheet() {
+    sheet(`<h2>Sumar una promo</h2><div class="sub">Subí una foto del cartel, una captura o pegá el link de la promo.</div>
+      <label class="field" for="botfile">Foto o captura<input id="botfile" type="file" accept="image/*"></label>
+      <label class="field" for="botlink">O pegá el link<input id="botlink" placeholder="https://"></label>
+      <button class="btn full" id="botgo">Enviar al bot</button><div id="botout"></div>`, bg => {
+        $("#botgo", bg).onclick = () => {
+          const out = $("#botout", bg);
+          out.innerHTML = `<div class="sub">El bot está leyendo la promo…</div>`;
+          setTimeout(() => {
+            out.innerHTML = `<div class="card" style="background:var(--surface-2)"><span class="label">Esto entendió el bot</span>
+              <div class="split">${[["Comercio", "Panadería La Espiga"], ["Descuento", "20%"], ["Con", "Billetera Nube (QR)"], ["Días", "Lunes a viernes"], ["Tope", "$ 1.000 por mes"], ["Vence", "30/11"]].map(([a, b]) => `<div class="r"><span class="sub">${a}</span><b>${b}</b></div>`).join("")}</div>
+              <div class="fine">Confianza media: la revisamos y aparece para todos en unos minutos.</div></div>
+              <button class="btn full" data-close>Listo</button>`;
+          }, 1100);
+        };
+      });
+  }
+
+  // ---------- panel de comercios
+  function orgPanel() {
+    return `<div class="panel">
+      <div><span class="label">Panel para comercios · ejemplo</span><h2>La Proveeduría</h2><div class="sub">Tus promos en Tu Bolsillo y cómo les va, sin datos de personas: solo totales.</div></div>
+      <div class="kpis"><div><b>1.240</b><small>vieron tu promo</small></div><div><b>310</b><small>la guardaron</small></div><div><b>182</b><small>compraron con ella</small></div></div>
+      <div><span class="label">De verla a usarla, este mes</span><div class="funnel" style="margin-top:8px">
+        ${[["Vieron", 1240], ["Guardaron", 310], ["Compraron", 182]].map(([n, v]) => `<div class="f"><span>${n}</span><i style="width:${v / 1240 * 100}%"></i><span class="num">${v.toLocaleString("es-AR")}</span></div>`).join("")}</div></div>
+      <table class="table"><thead><tr><th>Promo</th><th>Días</th><th style="text-align:right">Usos</th><th></th></tr></thead><tbody>
+        <tr><td>25% con Tarjeta Azul</td><td>Jueves</td><td class="n">182</td><td><span class="status">Activa</span></td></tr>
+        <tr><td>2x1 en lácteos</td><td>Lunes</td><td class="n">64</td><td><span class="status off">Terminó</span></td></tr></tbody></table>
+      <form class="form2" id="orgform">
+        <span class="label full">Publicar una promo nueva</span>
+        <label class="field" for="o-what">Qué ofrecés<input id="o-what" value="15% en carnicería"></label>
+        <label class="field" for="o-day">Día<select id="o-day">${DAYS.map(d => `<option>${d}</option>`).join("")}</select></label>
+        <label class="field full" for="o-who">Para quién<select id="o-who"><option>Todos los clientes</option><option>Clientes a menos de 1 km</option></select></label>
+        <button class="btn full" type="submit">Publicar promo</button>
+      </form>
+    </div>`;
+  }
+
+  // ---------- render y eventos
+  function go(tab) { S.tab = tab; render(); $(".content").scrollTop = 0; }
+  function render() {
+    const m = $("#mount");
+    if (S.view === "org") { m.innerHTML = orgPanel(); $("#orgform").onsubmit = e => { e.preventDefault(); e.target.querySelector("button").textContent = "Publicada ✓ (le avisamos a clientes cerca)"; }; return; }
+    const keepScroll = $(".content")?.scrollTop || 0;
+    m.innerHTML = `<div class="phone"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span class="island"></span><span>5G</span></div>
+      <main class="content">${SCREENS[S.tab]()}</main>
+      <nav class="tabbar" aria-label="Secciones">${TABS.map(([k, l]) => `<button data-tab="${k}" ${k === S.tab ? 'aria-current="page"' : ""}><svg viewBox="0 0 24 24">${icons[k]}</svg>${l}</button>`).join("")}</nav>
+    </div></div>`;
+    $(".content").scrollTop = keepScroll;
+    bind();
+  }
+  function bind() {
+    const root = $("#mount");
+    root.querySelectorAll("[data-tab]").forEach(b => b.onclick = () => go(b.dataset.tab));
+    root.querySelectorAll("[data-promo]").forEach(b => b.onclick = () => promoSheet(b.dataset.promo));
+    root.querySelectorAll("[data-lesson]").forEach(b => b.onclick = () => lessonSheet(b.dataset.lesson));
+    root.querySelectorAll("[data-day]").forEach(b => b.onclick = () => { S.day = +b.dataset.day; render(); });
+    root.querySelectorAll("[data-rubro]").forEach(b => b.onclick = () => { S.rubro = b.dataset.rubro; render(); });
+    root.querySelectorAll("[data-pay]").forEach(b => b.onclick = () => { S.payOn[b.dataset.pay] = !S.payOn[b.dataset.pay]; render(); toast(S.payOn[b.dataset.pay] ? "Vas a ver sus promos." : "Ya no vas a ver sus promos."); });
+    if ($("#family")) $("#family").onclick = () => { S.family = !S.family; render(); };
+    if ($("#addpromo")) $("#addpromo").onclick = botSheet;
+    ["#addgasto", "#addgasto2"].forEach(id => { if ($(id)) $(id).onclick = gastoSheet; });
+    if ($("#personal")) $("#personal").onclick = () => { S.personal = !S.personal; render(); toast(S.personal ? "La app vuelve a personalizarse con tus gastos." : "Listo: ya no usamos tus gastos para personalizar."); };
+    const amt = $("#c-amt"), tna = $("#c-tna"), dd = $("#c-days");
+    if (amt) {
+      const upd = () => { S.amount = +amt.value.replace(/\D/g, "") || 0; S.tna = +String(tna.value).replace(",", ".") || 0; S.days = +dd.value;
+        $("#c-res").textContent = money(S.amount * S.tna / 100 / 365 * S.days); };
+      amt.oninput = upd; tna.oninput = upd; dd.onchange = upd;
+    }
+  }
+  document.querySelectorAll(".views button").forEach(b => b.onclick = () => {
+    S.view = b.id === "v-org" ? "org" : "user";
+    document.querySelectorAll(".views button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+    render();
+  });
+  render();
+})();
+</script>
+
+</body>
+</html>
